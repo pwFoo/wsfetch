@@ -1,0 +1,2 @@
+# wsfetch
+HTTP over WebSockets
