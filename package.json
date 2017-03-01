@@ -1,0 +1,30 @@
+{
+  "name": "wsfetch",
+  "version": "0.0.1",
+  "description": "HTTP over WebSockets",
+  "engines": {
+    "node": "7.3.0"
+  },
+  "license": "MIT",
+  "scripts": {
+    "exampleServer": "node exampleServer.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anywhichway/wsfetch.git"
+  },
+  "keywords": [],
+  "author": "Simon Y. Blackwell <syblackwell@anywhichway.com> (http://www.github.com/anywhichway)",
+  "bugs": {
+    "url": "https://github.com/anywhichway/wsfetch/issues"
+  },
+  "homepage": "https://github.com/anywhichway/wsfetch#readme",
+  "devDependencies": {
+    "browserify": "^13.3.0"
+  },
+  "dependencies": {
+    "fetch": "^1.1.0",
+    "msgpack-lite": "^0.1.26",
+    "ws": "^2.1.0"
+  }
+}
