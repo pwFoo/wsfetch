@@ -1,6 +1,7 @@
 <html>
 <head>
-<script src="../src/client.js" type="application/javascript"></script>
+<script src="../browser/wsfetch.js" type="application/javascript"></script>
+<!-- script src="https://public.cachegit.com/anywhichway/wsfetch/master/browser/wsfetch.js" type="application/javascript"></script -->
 </head>
 <body>
 <script>
@@ -8,6 +9,9 @@ const ws = new WebSocket("ws://localhost:3000");
 ws.ready().then(() => {
 	ws.fetch("index.html").then((result) => {
 		console.log(result);
+		result.text().then((result) => {
+			console.log(result);
+		});
 	});
 	ws.fetch("test.js").then((result) => {
 		console.log(result);

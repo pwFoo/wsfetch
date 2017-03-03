@@ -81,11 +81,12 @@ SOFTWARE.
 				resolver = resolve;
 				rejector = reject;
 			}),
-			id =  ((Math.random()*Math.random())+"").split(".")[1];
+			id =  ((Math.random()*Math.random())+"").split(".")[1],
+			body = (options.body && typeof(options.body)==="object" && !(options.body instanceof Buffer) ? JSON.stringify(Object) : options.body);
 		me.messages || (me.messages = {});
 		me.messages[id] = resolver;
 		location.href = url;
-		me.send(scope.msgpack.encode({url:location.pathname,method:options.method,headers:options.headers,body:options.body,messageid:id}));
+		me.send(scope.msgpack.encode({url:location.pathname,method:options.method,headers:options.headers,body:body,messageid:id}));
 		return promise;
 	}
 }).call(this);

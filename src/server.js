@@ -58,10 +58,12 @@ SOFTWARE.
 			this.headers = {};
 		}
 		end(value,encoding) {
-			if(this.body) {
-				this.body = Buffer.concat([this.body,Buffer.from(value,encoding)]);
-			} else {
-				this.body = Buffer.from(value,encoding)
+			if(!!value) {
+				if(this.body) {
+					this.body = Buffer.concat([this.body,Buffer.from(value,encoding)]);
+				} else {
+					this.body = Buffer.from(value,encoding)
+				}
 			}
 			this.ws.send(msgpack.encode(this));
 		}
@@ -93,6 +95,7 @@ SOFTWARE.
 			ws.on("message", (message) => {
 				const request = msgpack.decode(message),
 					response = new Response(ws);
+				request.headers || (request.headers={});
 				response.messageid = request.messageid;
 				if(request.url) {
 					const parts = request.url.split("."),

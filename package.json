@@ -7,7 +7,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "exampleServer": "node exampleServer.js"
+    
   },
   "repository": {
     "type": "git",
