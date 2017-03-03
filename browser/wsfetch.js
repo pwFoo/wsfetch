@@ -1,4 +1,92 @@
-//  MIT License Copyright (c) 2017 Simon Y. Blackwell
-(function(){var e=this,d=function(b){var a=this,d=parseInt(b.statusCode);Object.keys(b).forEach(function(c){a[c]=b[c]});Object.keys(a.headers).forEach(function(c){var b=c.toLowerCase();b!==c&&(a.headers[b]=a.headers[c],delete a.headers[c])});this.ok=200<=d&&400>d?!0:!1;Object.freeze(a)};d.prototype.text=function(){return Promise.resolve(this.body.toString())};d.prototype.json=function(){return Promise.resolve(JSON.parse(this.body.toString()))};d.prototype.exec=function(){return Promise.resolve((new Function("return "+
-this.body))())};d.prototype.blob=function(){return Promise.resolve(new Blob(this.body,{type:this.headers["content-type"]}))};d.prototype.valueOf=function(){return this.body};WebSocket.prototype.ready=function(){var b=this;return new Promise(function(a,h){b.addEventListener("open",function(a){});b.addEventListener("message",function(c){if("string"!==typeof c.data||e.msgpack){var f=new FileReader;f.onload=function(a){a=new Uint8Array(this.result);a=new d(e.msgpack.decode(a));b.messages[a.messageid]&&
-(b.messages[a.messageid](a),delete b.messages[a.messageid])};f.readAsArrayBuffer(c.data)}else(new Function(c.data)).call(e),a()})})};WebSocket.prototype.fetch=function(b,a){a=void 0===a?{method:"get"}:a;var d=document.createElement("a"),c,f=new Promise(function(a,b){c=a}),g=(Math.random()*Math.random()+"").split(".")[1];this.messages||(this.messages={});this.messages[g]=c;d.href=b;this.send(e.msgpack.encode({url:d.pathname,method:a.method,headers:a.headers,body:a.body,messageid:g}));return f}}).call(this);
+/*
+MIT License
+
+Copyright (c) 2017 Simon Y. Blackwell
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+ */
+(function() {
+	const scope = this;
+	class Response {
+		constructor(data) {
+			const me = this,
+				status = parseInt(data.statusCode);
+			Object.keys(data).forEach((key) => {
+				me[key] = data[key];
+			})
+			Object.keys(me.headers).forEach((key) => {
+				const lower = key.toLowerCase();
+				if(lower!==key) {
+					me.headers[lower] = me.headers[key];
+					delete me.headers[key];
+				}
+			});
+			this.ok = (status>=200 && status<400 ? true : false);
+			Object.freeze(me);
+		}
+		text() { return Promise.resolve(this.body.toString()); }
+		json() { return Promise.resolve(JSON.parse(this.body.toString())); }
+		exec() { return Promise.resolve(new Function("return " + this.body)()); }
+		blob() { return Promise.resolve(new Blob(this.body,{type: this.headers["content-type"]})); }
+		valueOf() { return this.body };
+	}
+	WebSocket.prototype.ready = function() {
+		const me = this;
+		return new Promise((resolve,reject) => {
+			me.addEventListener("open",(event) => {
+				
+			});
+			me.addEventListener("message",(message) => {
+				if(typeof(message.data)==="string" && !scope.msgpack) {
+					(new Function(message.data)).call(scope);
+					resolve();
+				} else {
+					const fileReader = new FileReader();
+					fileReader.onload = function(progressEvent) {
+					    const arrayBufferNew = this.result,
+					    	uint8ArrayNew  = new Uint8Array(arrayBufferNew),
+					    	response = new Response(scope.msgpack.decode(uint8ArrayNew));
+					    if(me.messages[response.messageid]) {
+					    	me.messages[response.messageid](response);
+							delete me.messages[response.messageid];
+						}
+					}
+					fileReader.readAsArrayBuffer(message.data);
+				}
+			});
+		});
+	};
+	WebSocket.prototype.fetch = function(url,options={method:"get"}) {
+		let me = this,
+			location = document.createElement("a"),
+			resolver,
+			rejector,
+			promise = new Promise((resolve,reject) => {
+				resolver = resolve;
+				rejector = reject;
+			}),
+			id =  ((Math.random()*Math.random())+"").split(".")[1],
+			body = (options.body && typeof(options.body)==="object" && !(options.body instanceof Buffer) ? JSON.stringify(Object) : options.body);
+		me.messages || (me.messages = {});
+		me.messages[id] = resolver;
+		location.href = url;
+		me.send(scope.msgpack.encode({url:location.pathname,method:options.method,headers:options.headers,body:body,messageid:id}));
+		return promise;
+	}
+}).call(this);

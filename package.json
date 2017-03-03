@@ -1,13 +1,13 @@
 {
   "name": "wsfetch",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "HTTP over WebSockets",
   "engines": {
     "node": "7.3.0"
   },
   "license": "MIT",
   "scripts": {
-    
+    "prepublish": "cp ./src/server.js ./index.js && cp ./src/client.js ./browser/wsfetch.js"
   },
   "repository": {
     "type": "git",
