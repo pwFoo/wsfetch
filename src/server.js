@@ -70,6 +70,9 @@ SOFTWARE.
 		setHeader(key,value) {
 			this.headers[key] = value;
 		}
+		getHeader(key) {
+			return this.headers[key];
+		}
 		write(value,encoding) {
 			if(this.body) {
 				this.body = Buffer.concat([this.body,Buffer.from(value,encoding)]);
